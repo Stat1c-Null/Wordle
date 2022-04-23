@@ -1,9 +1,19 @@
 import random as r
 from colorama import Back, Style, Fore
-import os
+import os, requests
 #Possible words to guess
-words = ["NYMPH", "PAPER", "HANDS", "CHALK", "TOXIC", "WATER", "EPOXY"]
-hidden_word = r.choice(words)#Word to guess
+url = "http://www.mieliestronk.com/corncob_lowercase.txt"
+words = requests.get(url)#Get dictionary from web
+words = words.text.splitlines()#Splitting dictionary by words
+#Sort through words
+sorted_list = []
+for i in range(len(words)):
+  if len(words[i]) == 5:
+    words[i] = words[i].upper()
+    sorted_list.append(words[i])
+  else:
+    pass
+hidden_word = r.choice(sorted_list)#Word to guess
 hidden_letters = []
 for char in hidden_word:
   hidden_letters.append(char)
@@ -55,7 +65,6 @@ print(Back.YELLOW + Fore.BLACK + "\n\t\tYou have 6 tries to guess a 5 letter wor
 #Game Loop
 while guess != hidden_word and lives > 0:
   print_words(guessed_words[0], guessed_words[1], guessed_words[2], guessed_words[3], guessed_words[4], guessed_words[5])
-  print(hidden_word)
 
   #User Interface
   print(Fore.GREEN + "Correct Letters:" + str(correct_letters))
@@ -92,4 +101,14 @@ while guess != hidden_word and lives > 0:
     lives -= 1
     guessed_words.insert(counter, guess)
     counter += 1
+    for char in guess:
+      wrong_letters.append(char)
     temp = []
+
+#Game Over Scenario
+if lives <= 0:
+  print(Fore.RED + " YOU LOST THE GAME! GO READ SOME DICTIONARY")
+  print(Fore.MAGENTA + "The correct word was: " + hidden_word)
+else:
+  print(Fore.GREEN + " YOU WON THE GAME LIKE YOU SOME KIND OF ENGLISH TEACHER OR SOMETHING")
+  
