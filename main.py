@@ -33,29 +33,27 @@ guess = ""
 def print_words(word1, word2, word3, word4, word5, word6):
   print(Fore.BLUE + "\n\t\t\t\t" + word1 + "\n\t\t\t\t" + word2 + "\n\t\t\t\t" + word3 + "\n\t\t\t\t" + word4 + "\n\t\t\t\t" + word5 + "\n\t\t\t\t" + word6 + "\n")
 
+#Check if the letter is already in list
+def check_in_list(list1, counter, list2):
+  if list1[counter] in list2:
+    pass
+  else:
+    list2.append(list1[counter])
+
 def compare_letters(cor_list, guess_list):
   global correct_letters, wrong_letters, wrongpos_letters
   cor_let = 0
   for z in range(len(cor_list)):
     if cor_list[z] == guess_list[z]:#Letter at exact position
       cor_let += 1
-      if guess_list[z] in correct_letters:
-        pass
-      else:
-        correct_letters.append(guess_list[z])
+      check_in_list(guess_list, z, correct_letters)
     #Correct letter at wrong pos
     elif guess_list[z] in cor_list and guess_list[z] != cor_list[z]:
       #Check if letter is in the word but not at the right position
       cor_let += 1
-      if guess_list[z] in wrongpos_letters:
-        pass
-      else:
-        wrongpos_letters.append(guess_list[z])
+      check_in_list(guess_list, z, wrongpos_letters)
     else:#Wrong letter
-      if guess_list[z] in wrong_letters:
-        pass
-      else:
-        wrong_letters.append(guess_list[z])
+      check_in_list(guess_list, z, wrong_letters)
   return cor_let
 
 #Game Logic
