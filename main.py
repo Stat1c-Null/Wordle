@@ -28,6 +28,7 @@ temp = []
 ph = "*****"
 guessed_words = [ph, ph, ph, ph, ph, ph]
 guess = ""
+ph_word = "_____"
 
 #Functions
 def print_words(word1, word2, word3, word4, word5, word6):
@@ -39,14 +40,28 @@ def check_in_list(list1, counter, list2):
     pass
   else:
     list2.append(list1[counter])
-
+#Replace letters in correct word
+def replace_letters(letter):
+  global hidden_letters, ph_word
+  new = ""
+  for i in range(len(hidden_letters)):
+    if letter == hidden_letters[i]:
+      new += letter
+    else:
+      new += ph_word[i]
+  ph_word = new
+  
 def compare_letters(cor_list, guess_list):
-  global correct_letters, wrong_letters, wrongpos_letters
+  global correct_letters, wrong_letters, wrongpos_letters, ph_word
   cor_let = 0
   for z in range(len(cor_list)):
     if cor_list[z] == guess_list[z]:#Letter at exact position
+      replace_letters(guess_list[z])
       cor_let += 1
       check_in_list(guess_list, z, correct_letters)
+      #If letter is correct, remove it from wrong position letters
+      if guess_list[z] in wrongpos_letters:
+        wrongpos_letters.remove(guess_list[z])
     #Correct letter at wrong pos
     elif guess_list[z] in cor_list and guess_list[z] != cor_list[z]:
       #Check if letter is in the word but not at the right position
@@ -63,8 +78,8 @@ print(Back.YELLOW + Fore.BLACK + "\n\t\tYou have 6 tries to guess a 5 letter wor
 #Game Loop
 while guess != hidden_word and lives > 0:
   print_words(guessed_words[0], guessed_words[1], guessed_words[2], guessed_words[3], guessed_words[4], guessed_words[5])
-
   #User Interface
+  print(Fore.MAGENTA + "The word is: " + ph_word + "\n")
   print(Fore.GREEN + "Correct Letters:" + str(correct_letters))
   print(Fore.RED + "Wrong Letters:" + str(wrong_letters))
   print(Fore.YELLOW + "Wrongly Placed Letters: " + str(wrongpos_letters))
@@ -108,5 +123,6 @@ if lives <= 0:
   print(Fore.RED + " YOU LOST THE GAME! GO READ SOME DICTIONARY")
   print(Fore.MAGENTA + "The correct word was: " + hidden_word)
 else:
+  print(Back.BLACK + Fore.MAGENTA + "\t\t\t" + ph_word + Style.RESET_ALL)
   print(Fore.GREEN + " YOU WON THE GAME LIKE YOU SOME KIND OF ENGLISH TEACHER OR SOMETHING")
   
