@@ -1,19 +1,16 @@
 import random as r
 from colorama import Back, Style, Fore
-import os, requests
+import os
 #Possible words to guess
-url = "http://www.mieliestronk.com/corncob_lowercase.txt"
-words = requests.get(url)#Get dictionary from web
-words = words.text.splitlines()#Splitting dictionary by words
-#Sort through words
-sorted_list = []
-for i in range(len(words)):
-  if len(words[i]) == 5:
-    words[i] = words[i].upper()
-    sorted_list.append(words[i])
-  else:
-    pass
-hidden_word = r.choice(sorted_list)#Word to guess
+
+words = []
+#Get words from file
+with open('words.txt', 'r') as file:
+  for line in (line.strip('\n') for line in file):
+    up_line = line.upper()
+    words.append(up_line)
+    
+hidden_word = r.choice(words)#Word to guess
 hidden_letters = []
 for char in hidden_word:
   hidden_letters.append(char)
@@ -94,7 +91,7 @@ while guess != hidden_word and lives > 0:
     temp.append(i)
   #Compare chars
   exact_letters = compare_letters(hidden_letters, temp)
-  print(temp)
+  
   #Check if the guess is correct
   if guess == hidden_word:
     os.system("clear")
@@ -122,7 +119,9 @@ while guess != hidden_word and lives > 0:
 if lives <= 0:
   print(Fore.RED + " YOU LOST THE GAME! GO READ SOME DICTIONARY")
   print(Fore.MAGENTA + "The correct word was: " + hidden_word)
+  print(wrong_letters)
 else:
   print(Back.BLACK + Fore.MAGENTA + "\t\t\t" + ph_word + Style.RESET_ALL)
   print(Fore.GREEN + " YOU WON THE GAME LIKE YOU SOME KIND OF ENGLISH TEACHER OR SOMETHING")
+  
   
