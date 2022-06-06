@@ -9,16 +9,12 @@ with open('words.txt', 'r') as file:
   for line in (line.strip('\n') for line in file):
     up_line = line.upper()
     words.append(up_line)
-    
-hidden_word = r.choice(words)#Word to guess
-hidden_letters = []
-for char in hidden_word:
-  hidden_letters.append(char)
 
 #Variables
-
+hidden_word = ""
 lives = 6#Number of tries
 counter = 0
+hidden_letters = []
 wrong_letters = []
 correct_letters = []#Used letters 
 wrongpos_letters = []
@@ -29,8 +25,15 @@ guess = ""
 ph_word = "_____"
 letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 unused_letters = []
+color_word = ""
 
 #Functions
+def choose_word():
+  global hidden_word, hidden_letters
+  hidden_word = r.choice(words)#Word to guess
+  for char in hidden_word:
+    hidden_letters.append(char)
+
 def print_words(word1, word2, word3, word4, word5, word6):
   print(Fore.BLUE + "\n\t\t\t\t" + word1 + "\n\t\t\t\t" + word2 + "\n\t\t\t\t" + word3 + "\n\t\t\t\t" + word4 + "\n\t\t\t\t" + word5 + "\n\t\t\t\t" + word6 + "\n")
 
@@ -49,10 +52,11 @@ def check_word(word):
     return False
     
 def compare_letters(cor_list, guess_list):
-  global correct_letters, wrong_letters, wrongpos_letters, ph_word
+  global correct_letters, wrong_letters, wrongpos_letters, ph_word, color_word
   cor_let = 0
   for z in range(len(cor_list)):
     if cor_list[z] == guess_list[z]:#Letter at exact position
+      color_word += Fore.GREEN + guess_list[z]####################
       replace_letters(guess_list[z])
       cor_let += 1
       check_in_list(guess_list, z, correct_letters)
@@ -61,11 +65,14 @@ def compare_letters(cor_list, guess_list):
         wrongpos_letters.remove(guess_list[z])
     #Correct letter at wrong pos
     elif guess_list[z] in cor_list and guess_list[z] != cor_list[z]:
-      #Check if letter is in the word but not at the right position
+      #Check if letter is in the word but not at the right position\
+      color_word += Fore.YELLOW + guess_list[z]####################
       cor_let += 1
       check_in_list(guess_list, z, wrongpos_letters)
     else:#Wrong letter
+      color_word += Fore.RED + guess_list[z]####################
       check_in_list(guess_list, z, wrong_letters)
+  color_word += Fore.MAGENTA + "|"
   return cor_let
 
 #Replace letters in correct word
@@ -85,8 +92,9 @@ print(Back.YELLOW + Fore.BLACK + "\n\t\tYou have 6 tries to guess a 5 letter wor
 
 #Game Loop
 def gameloop():
-  global lives, counter, wrong_letters, wrongpos_letters, correct_letters, temp, ph, guessed_words, guess, ph_word, letters, unused_letters
-  
+  global lives, counter, wrong_letters, wrongpos_letters, correct_letters, temp, ph, guessed_words, guess, ph_word, letters, unused_letters, color_word, test_word
+  #Pick a word to guess
+  choose_word()
   while guess != hidden_word and lives > 0:
     print_words(guessed_words[0], guessed_words[1], guessed_words[2], guessed_words[3], guessed_words[4], guessed_words[5])
     #Filter available letters
@@ -98,6 +106,7 @@ def gameloop():
         unused_letters.append(letters[i])
     #User Interface
     print(Fore.MAGENTA + "The word is: " + ph_word + "\n")
+    print("Colored word: %s" % color_word)
     print(Back.BLACK + Fore.BLUE + "Letters left:\n" + str(unused_letters) + Style.RESET_ALL)
     print(Fore.GREEN + "Correct Letters:" + str(correct_letters))
     print(Fore.RED + "Wrong Letters:" + str(wrong_letters))
@@ -136,8 +145,6 @@ def gameloop():
       lives -= 1
       guessed_words.insert(counter, guess)
       counter += 1
-      for char in guess:
-        wrong_letters.append(char)
       temp = []
 
   #Game Over Scenario
@@ -165,7 +172,8 @@ def gameloop():
     ph_word = "_____"
     letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     unused_letters = []
-    
+    hidden_letters.clear()
+    color_word = ""
     gameloop()
   else: 
     print(Fore.YELLOW + "Thank you for playing!")
